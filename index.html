@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roll For Love ❤️</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f0f14;
+    color: white;
+    text-align: center;
+}
+
+.screen {
+    display: none;
+    padding: 40px;
+}
+
+.active {
+    display: block;
+}
+
+button {
+    background: #ff4d6d;
+    border: none;
+    padding: 12px 20px;
+    color: white;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input, select {
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+}
+
+.card {
+    background: #1c1c26;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 500px;
+}
+
+img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.ascii {
+    font-family: monospace;
+    white-space: pre;
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div id="intro" class="screen active">
+    <h1>🎲 Roll For Love</h1>
+
+    <div class="card">
+        <p>A quest has appeared:</p>
+        <h2>Find Your Forever Person</h2>
+        <p>Difficulty: Unknown</p>
+        <p>Reward: ???</p>
+    </div>
+
+    <p>Do you accept the quest?</p>
+    <button onclick="startGame()">Accept Quest</button>
+</div>
+
+<!-- CHARACTER CREATION -->
+<div id="create" class="screen">
+    <h2>Character Creation</h2>
+
+    <input id="name" placeholder="Enter your name">
+
+    <br>
+
+    <select id="class">
+        <option>Bard</option>
+        <option>Fighter</option>
+        <option>Rogue</option>
+        <option>Wizard</option>
+        <option>Ranger</option>
+    </select>
+
+    <br>
+
+    <button onclick="rollStats()">Roll Stats</button>
+
+    <div id="stats"></div>
+
+    <button id="continue1" style="display:none" onclick="level1()">Begin Adventure</button>
+</div>
+
+<!-- LEVEL 1 -->
+<div id="level1" class="screen">
+    <h2>Level 1: Communication</h2>
+
+    <div class="card">
+        <p>A stray cat appears...</p>
+        <pre class="ascii">
+ /\_/\
+( o.o )
+ > ^ <
+        </pre>
+
+        <p>Attempt to tame it?</p>
+
+        <button onclick="catRoll()">Tame Cat</button>
+
+        <div id="catResult"></div>
+    </div>
+
+    <button onclick="battle('Miscommunication', 2, level2)">Fight Miscommunication</button>
+
+    <div id="mem1"></div>
+</div>
+
+<!-- LEVEL 2 -->
+<div id="level2" class="screen">
+    <h2>Level 2: Doubt</h2>
+
+    <button onclick="battle('Doubt', 3, level3)">Fight Doubt</button>
+
+    <div id="mem2"></div>
+</div>
+
+<!-- LEVEL 3 -->
+<div id="level3" class="screen">
+    <h2>Level 3: Distance</h2>
+
+    <button onclick="battle('Distance', 4, level4)">Fight Distance</button>
+
+    <div id="mem3"></div>
+</div>
+
+<!-- FINAL BOSS -->
+<div id="level4" class="screen">
+    <h2>Final Boss: Corrupted Phillips</h2>
+
+    <div class="card">
+        <p>A distorted version of someone familiar appears...</p>
+
+        <pre class="ascii">
+   (corrupted)
+    PHILLIPS
+        </pre>
+
+        <button onclick="finalBattle()">Fight</button>
+    </div>
+</div>
+
+<!-- END -->
+<div id="end" class="screen">
+    <h1>❤️ Quest Complete</h1>
+
+    <div id="endingText"></div>
+
+    <h3>Party</h3>
+    <p id="party"></p>
+</div>
+
+<script>
+
+let player = {
+    name: "",
+    class: "",
+    stats: {},
+    cat: null
+};
+
+function startGame() {
+    switchScreen('create');
+}
+
+function switchScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+/* CHARACTER CREATION */
+function rollStats() {
+    player.name = document.getElementById("name").value;
+    player.class = document.getElementById("class").value;
+
+    let stats = ["STR","INT","WIS","DEX","CHA","LUC"];
+    let out = "<div class='card'>";
+
+    player.stats = {};
+
+    stats.forEach(s => {
+        let roll = Math.floor(Math.random()*20)+1;
+        player.stats[s] = roll;
+        out += `<p>${s}: ${roll}</p>`;
+    });
+
+    out += "</div>";
+
+    document.getElementById("stats").innerHTML = out;
+    document.getElementById("continue1").style.display = "inline-block";
+}
+
+/* CAT SYSTEM */
+let catAttempts = 0;
+
+function catRoll() {
+    catAttempts++;
+
+    let threshold = catAttempts === 1 ? 11 : catAttempts === 2 ? 8 : 1;
+    let roll = Math.floor(Math.random()*20)+1;
+
+    let result = document.getElementById("catResult");
+
+    if (roll >= threshold) {
+        let name = prompt("You befriended the cat! Name it:");
+
+        player.cat = name || "Mochi";
+
+        result.innerHTML = `<p>Cat joined your journey!</p>
+        <p>Name: ${player.cat}</p>`;
+
+    } else {
+        result.innerHTML = `<p>The cat runs away... (rolled ${roll})</p>`;
+    }
+}
+
+/* BATTLE SYSTEM */
+function battle(enemy, winsNeeded, nextLevel) {
+    let wins = 0;
+
+    for (let i = 0; i < winsNeeded; i++) {
+        let playerRoll = Math.floor(Math.random()*20)+1;
+        let enemyRoll = Math.floor(Math.random()*20)+1;
+
+        if (playerRoll >= enemyRoll) wins++;
+    }
+
+    if (wins >= winsNeeded-1) {
+        alert(enemy + " defeated!");
+
+        if (nextLevel) nextLevel();
+    } else {
+        alert("The battle continues...");
+    }
+}
+
+/* LEVELS */
+function level1() {
+    switchScreen('level1');
+}
+
+function level2() {
+    unlockMemory("mem1", "Communication", "First connection established.");
+    switchScreen('level2');
+}
+
+function level3() {
+    unlockMemory("mem2", "Doubt", "We chose each other anyway.");
+    switchScreen('level3');
+}
+
+function level4() {
+    unlockMemory("mem3", "Distance", "Love survived the miles.");
+    switchScreen('level4');
+}
+
+/* FINAL BATTLE */
+function finalBattle() {
+    switchScreen('end');
+
+    document.getElementById("endingText").innerHTML =
+    `
+    <p>Even corrupted, you were still you.</p>
+    <p>And I still chose you.</p>
+    <p>Every roll was a natural 20.</p>
+    <p>❤️ Happy Anniversary ❤️</p>
+    `;
+
+    document.getElementById("party").innerHTML =
+    `
+    ${player.name} (${player.class})<br>
+    ${player.cat ? player.cat + " (Cat Familiar)" : "No Familiar"}
+    `;
+}
+
+/* MEMORY SYSTEM */
+function unlockMemory(id, title, text) {
+    document.getElementById(id).innerHTML =
+    `<div class='card'>
+        <h3>Memory Unlocked: ${title}</h3>
+        <p>${text}</p>
+    </div>`;
+}
+
+</script>
+
+</body>
+</html>

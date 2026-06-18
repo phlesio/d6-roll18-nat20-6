@@ -4,48 +4,7 @@
 <meta charset="UTF-8">
 <title>d6 - roll18 - nat20 plus 5</title>
 
-const ascii = {
-  miscommunication: `
-   ╔══════════════╗
-   ║  ???   ???   ║
-   ║  ???   ???   ║
-   ╚══════════════╝
-   MISCOMMUNICATION
-  `,
 
-  doubt: `
-      .-""""-.
-     /  o  o  \\
-    |    ∆     |
-     \\  ---   /
-      '-----'
-        DOUBT
-  `,
-
-  distance: `
-PLAYER
-
-      🌙  · · · · · · ·
-
-          miles
-
-      · · · · · · ·
-
-PHILLIPS
-  `,
-
-  corruptedPhillips: `
-     (╬ಠ益ಠ)
-      PHILLIPS
-   CORRUPTED
-  `,
-
-  cat: `
- /\_/\\
-( o.o )
- > ^ <
-  `
-};
 
     
 <style>
@@ -109,16 +68,16 @@ img {
 
 <!-- INTRO -->
 <div id="intro" class="screen active">
-    <h1>🎲 Roll For Love</h1>
+    <h1>d6- roll18 - nat20 plus 5</h1>
 
     <div class="card">
-        <p>A quest has appeared:</p>
+        <p>A new quest has appeared:</p>
         <h2>Find Your Forever Person</h2>
-        <p>Difficulty: Unknown</p>
+        <p>Difficulty: Nigh Impossible</p>
         <p>Reward: ???</p>
     </div>
 
-    <p>Do you accept the quest?</p>
+    <p>Do you accept?</p>
     <button onclick="startGame()">Accept Quest</button>
 </div>
 
@@ -148,6 +107,8 @@ img {
 </div>
 
 <!-- LEVEL 1 -->
+
+  
 <div id="level1" class="screen">
     <h2>Level 1: Communication</h2>
 
@@ -216,7 +177,25 @@ img {
 </div>
 
 <script>
+let game = {
+    player: {
+        name: "",
+        class: "",
+        hp: 100,
+        maxHp: 100,
+        stats: {},
+        cat: null
+    },
 
+    enemy: {
+        name: "",
+        hp: 0,
+        maxHp: 0,
+        stats: {}
+    },
+
+    inBattle: false
+};
 let player = {
     name: "",
     class: "",

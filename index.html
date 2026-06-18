@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D6, Rolled 18, 20 Modifier 5 (6/18/25)</title>
+<title>Love RPG Anniversary Game</title>
 
 <style>
 body {
@@ -121,16 +121,21 @@ pre {
 
     <button onclick="attack()">ATTACK</button>
 
-    <div class="card">
-        <img id="photo" style="width:100%; border-radius:10px; display:none;">
-        <p id="memory"></p>
+    <!-- CAT SYSTEM -->
+    <div class="card" id="catCard" style="display:none;">
+        <h3>🐱 COMPANION ENCOUNTER</h3>
+        <pre id="catArt" class="ascii"></pre>
+        <p id="catName"></p>
+        <button onclick="tameCat()">Try to Tame (Roll d20)</button>
+        <p id="catResult"></p>
     </div>
+
 </div>
 
 <!-- END -->
 <div id="end" class="screen">
     <h1>THE END</h1>
-    <p>Happy One Year Anniversary</p>
+    <p>Happy One Year Anniversary ❤️</p>
 </div>
 
 <script>
@@ -142,7 +147,8 @@ pre {
 let game = {
     player: { hp: 100, maxHp: 100, name: "", class: "", cat: null },
     enemy: { hp: 0, maxHp: 0, name: "", stats: {} },
-    next: null
+    next: null,
+    cat: null
 };
 
 /* =========================
@@ -154,31 +160,33 @@ const bosses = {
         name: "Miscommunication",
         hp: 40,
         ascii: `??? signals break ???`,
-        photo: "photos/level1.jpg",
-        memory: "Huh? Hey you said this... I said that..."
     },
     doubt: {
         name: "Doubt",
         hp: 60,
         ascii: `( ? ? )`,
-        photo: "photos/level2.jpg",
-        memory: "Are you sure... you want to stay?"
     },
     distance: {
         name: "Distance",
         hp: 80,
         ascii: `YOU .... PHILLIPS`,
-        photo: "photos/level3.jpg",
-        memory: "We can fly and see each other once a month..."
     },
     final: {
         name: "Corrupted Phillips",
         hp: 120,
         ascii: `(╬ಠ益ಠ)`,
-        photo: "photos/final.jpg",
-        memory: "Even when broken, I still chose you."
     }
 };
+
+/* =========================
+   CATS
+========================= */
+
+const cats = [
+    { name: "Void Kitten", ascii: "(=චᆽච=)", buff: "damage" },
+    { name: "Sunbeam Cat", ascii: "ฅ^•ﻌ•^ฅ", buff: "heal" },
+    { name: "Gremlin Cat", ascii: "(=｀ω´=)", buff: "crit" }
+];
 
 /* =========================
    NAV
@@ -200,9 +208,7 @@ function roll(){
     return Math.floor(Math.random()*20)+1;
 }
 
-function nat20(r){
-    return r === 20;
-}
+function nat20(r){ return r === 20; }
 
 /* =========================
    CHARACTER
@@ -222,6 +228,40 @@ function create(){
 }
 
 /* =========================
+   CAT SYSTEM
+========================= */
+
+function spawnCat(){
+
+    let c = cats[Math.floor(Math.random()*cats.length)];
+
+    game.cat = { ...c, tamed: false };
+
+    document.getElementById("catCard").style.display = "block";
+    document.getElementById("catArt").innerText = c.ascii;
+    document.getElementById("catName").innerText = c.name;
+    document.getElementById("catResult").innerText = "";
+}
+
+function tameCat(){
+
+    let r = roll();
+
+    if(r > 10){
+        game.cat.tamed = true;
+        game.player.cat = game.cat;
+
+        document.getElementById("catResult").innerText =
+            `Rolled ${r} — The cat trusts you ❤️`;
+    } else {
+        document.getElementById("catResult").innerText =
+            `Rolled ${r} — The cat ran away...`;
+    }
+
+    document.getElementById("catCard").style.display = "none";
+}
+
+/* =========================
    SPAWN
 ========================= */
 
@@ -237,12 +277,10 @@ function spawn(key, next){
     document.getElementById("enemyName").innerText = b.name;
     document.getElementById("enemyArt").innerText = b.ascii;
 
-    document.getElementById("photo").src = b.photo;
-    document.getElementById("photo").style.display = "block";
-    document.getElementById("memory").innerText = b.memory;
-
     update();
     show("battle");
+
+    spawnCat(); // 👈 CAT ADDED HERE
 }
 
 /* =========================
@@ -254,13 +292,18 @@ function attack(){
     let pr = roll();
     let er = roll();
 
+    // CAT BUFFS
+    if(game.player.cat && game.player.cat.tamed){
+        if(game.player.cat.buff === "damage") pr += 2;
+        if(game.player.cat.buff === "crit" && pr > 18) pr = 20;
+    }
+
     document.getElementById("log").innerText =
-        `You ${pr} vs Enemy ${er}`;
+        `You rolled ${pr} vs Enemy ${er}`;
 
     if(nat20(pr)){
         game.enemy.hp -= 30;
-        document.getElementById("effect").innerText =
-            "NAT 20!";
+        document.getElementById("effect").innerText = "CRITICAL HIT 💥";
     }
     else if(pr >= er){
         game.enemy.hp -= 10;
@@ -293,7 +336,7 @@ function update(){
 }
 
 /* =========================
-   ENDING
+   END
 ========================= */
 
 function endCheck(){
@@ -316,13 +359,9 @@ function level1(){ spawn("miscommunication", level2); }
 function level2(){ spawn("doubt", level3); }
 function level3(){ spawn("distance", finalBoss); }
 
-function finalBoss(){
-    spawn("final", endGame);
-}
+function finalBoss(){ spawn("final", endGame); }
 
-function endGame(){
-    show("end");
-}
+function endGame(){ show("end"); }
 
 </script>
 

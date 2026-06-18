@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roll For Love ❤️</title>
+<title>D6, Rolled 18, 20 Modifier 5 (6/18/25)</title>
 
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: "Courier New", Courier, monospace;
     background: #0e0f14;
     color: white;
     text-align: center;
@@ -69,7 +69,7 @@ pre {
 
 <!-- INTRO -->
 <div id="intro" class="screen active">
-    <h1>🎲 Roll For Love</h1>
+    <h1>Test your Love</h1>
     <div class="card">
         <p>A relationship RPG adventure</p>
     </div>
@@ -82,13 +82,13 @@ pre {
     <input id="name" placeholder="Your name">
     <br>
     <select id="class">
-        <option>Bard</option>
-        <option>Fighter</option>
-        <option>Rogue</option>
-        <option>Wizard</option>
+        <option>Bubbas Bard</option>
+        <option>Wizard of Nooms</option>
+        <option>Darling Druid</option>
+        <option>Bubsbarian</option>
     </select>
 
-    <button onclick="create()">Roll Stats</button>
+    <button onclick="create()">Roll for Stats</button>
 
     <div id="stats"></div>
 
@@ -129,8 +129,8 @@ pre {
 
 <!-- END -->
 <div id="end" class="screen">
-    <h1>❤️ THE END</h1>
-    <p>Happy Anniversary</p>
+    <h1>THE END</h1>
+    <p>Happy One Year Anniversary</p>
 </div>
 
 <script>
@@ -155,28 +155,28 @@ const bosses = {
         hp: 40,
         ascii: `??? signals break ???`,
         photo: "photos/level1.jpg",
-        memory: "We didn’t always understand each other."
+        memory: "Huh? Hey you said this... I said that..."
     },
     doubt: {
         name: "Doubt",
         hp: 60,
         ascii: `( ? ? )`,
         photo: "photos/level2.jpg",
-        memory: "We questioned everything—but stayed."
+        memory: "Are you sure... you want to stay?"
     },
     distance: {
         name: "Distance",
         hp: 80,
         ascii: `YOU .... PHILLIPS`,
         photo: "photos/level3.jpg",
-        memory: "Miles couldn’t stop us."
+        memory: "We can fly and see each other once a month..."
     },
     final: {
         name: "Corrupted Phillips",
         hp: 120,
         ascii: `(╬ಠ益ಠ)`,
         photo: "photos/final.jpg",
-        memory: "Even broken, I still chose you."
+        memory: "Even when broken, I still chose you."
     }
 };
 
@@ -260,7 +260,7 @@ function attack(){
     if(nat20(pr)){
         game.enemy.hp -= 30;
         document.getElementById("effect").innerText =
-            "💥 NAT 20!";
+            "NAT 20!";
     }
     else if(pr >= er){
         game.enemy.hp -= 10;

@@ -8,6 +8,51 @@
 
     
 <style>
+    <style>
+.ascii {
+    font-family: monospace;
+    white-space: pre;
+}
+
+.card {
+    background: #1b1d2a;
+    padding: 12px;
+    margin: 10px auto;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.bar {
+    width: 100%;
+    height: 18px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    background: #ff4d6d;
+    transition: 0.3s;
+}
+
+.enemyFill {
+    background: #6c63ff;
+}
+
+button {
+    padding: 12px;
+    width: 90%;
+    max-width: 300px;
+    margin: 6px;
+    border: none;
+    border-radius: 10px;
+    background: #ff4d6d;
+    color: white;
+    font-size: 16px;
+}
+</style>
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -175,7 +220,30 @@ img {
     <h3>Party</h3>
     <p id="party"></p>
 </div>
+let game = {
+    player: {
+        name: "",
+        class: "",
+        hp: 100,
+        maxHp: 100,
+        cat: null
+    },
+    enemy: {
+        name: "",
+        hp: 0,
+        maxHp: 0,
+        stats: {}
+    },
+    next: null
+};
 
+    function roll() {
+    return Math.floor(Math.random() * 20) + 1;
+}
+
+function isNat20(r) {
+    return r === 20;
+}
 <script>
 let game = {
     player: {
@@ -201,6 +269,53 @@ let player = {
     class: "",
     stats: {},
     cat: null
+};
+
+    const bosses = {
+    miscommunication: {
+        name: "Miscommunication",
+        hp: 40,
+        ascii: `
+   ???  ???  ???
+   broken signals
+        `,
+        photo: "photos/level1.jpg",
+        memory: "We struggled to understand each other."
+    },
+
+    doubt: {
+        name: "Doubt",
+        hp: 60,
+        ascii: `
+   .-""""-.
+  (  ?  ?  )
+    DOUBT
+        `,
+        photo: "photos/level2.jpg",
+        memory: "We questioned everything—but stayed."
+    },
+
+    distance: {
+        name: "Distance",
+        hp: 80,
+        ascii: `
+YOU        ...        PHILLIPS
+   miles between
+        `,
+        photo: "photos/level3.jpg",
+        memory: "Miles couldn’t break us."
+    },
+
+    final: {
+        name: "Corrupted Phillips",
+        hp: 120,
+        ascii: `
+  (╬ಠ益ಠ)
+  CORRUPTED PHILLIPS
+        `,
+        photo: "photos/final.jpg",
+        memory: "Even broken, I was still yours."
+    }
 };
 
 function startGame() {

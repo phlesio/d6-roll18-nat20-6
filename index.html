@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love RPG Anniversary Game</title>
+<title>D20 Love RPG</title>
 
 <style>
 body {
     margin: 0;
     font-family: "Courier New", Courier, monospace;
     background: #0e0f14;
-    color: white;
+    color: #e6e6e6;
     text-align: center;
+    letter-spacing: 0.5px;
 }
 
 .screen { display: none; padding: 20px; }
@@ -26,6 +27,10 @@ body {
     max-width: 520px;
 }
 
+button, input, select, pre, p, h1, h2, h3 {
+    font-family: "Courier New", Courier, monospace;
+}
+
 button {
     width: 90%;
     max-width: 320px;
@@ -36,6 +41,7 @@ button {
     background: #ff4d6d;
     color: white;
     font-size: 16px;
+    cursor: pointer;
 }
 
 pre {
@@ -43,6 +49,7 @@ pre {
     font-size: 14px;
 }
 
+/* HP bars */
 .bar {
     background: #333;
     height: 18px;
@@ -58,9 +65,21 @@ pre {
 
 .enemyFill { background: #6c63ff; }
 
+/* D20 display */
+.d20 {
+    font-size: 14px;
+    background: #111;
+    padding: 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 4px;
+    min-width: 80px;
+}
+
+/* ASCII styling */
 .ascii {
-    font-family: monospace;
     white-space: pre;
+    font-family: "Courier New", monospace;
 }
 </style>
 </head>
@@ -69,66 +88,75 @@ pre {
 
 <!-- INTRO -->
 <div id="intro" class="screen active">
-    <h1>Test your Love</h1>
+    <h1>TEST YOUR LOVE</h1>
     <div class="card">
-        <p>A relationship RPG adventure</p>
+        <p>A D20 relationship RPG</p>
     </div>
-    <button onclick="start()">Accept Quest</button>
+    <button onclick="start()">Begin</button>
 </div>
 
 <!-- CHARACTER -->
 <div id="char" class="screen">
-    <h2>Create Character</h2>
-    <input id="name" placeholder="Your name">
+    <h2>CREATE CHARACTER</h2>
+
+    <input id="name" placeholder="Name">
     <br>
+
     <select id="class">
-        <option>Bubbas Bard</option>
-        <option>Wizard of Nooms</option>
-        <option>Darling Druid</option>
-        <option>Bubsbarian</option>
+        <option>Bard</option>
+        <option>Druid</option>
+        <option>Wizard</option>
+        <option>Fighter</option>
     </select>
 
-    <button onclick="create()">Roll for Stats</button>
+    <button onclick="create()">Roll Stats</button>
 
-    <div id="stats"></div>
+    <pre id="statsBox"></pre>
 
-    <button onclick="level1()">Begin Journey</button>
+    <button onclick="level1()">Start Journey</button>
 </div>
 
 <!-- BATTLE -->
 <div id="battle" class="screen">
 
+    <!-- ENEMY -->
     <div class="card">
-        <h3>PLAYER</h3>
-        <div class="bar"><div id="pbar" class="fill"></div></div>
-        <p id="php"></p>
-    </div>
-
-    <div class="card">
-        <h3 id="enemyName"></h3>
+        <h2 id="enemyName"></h2>
         <pre id="enemyArt" class="ascii"></pre>
 
-        <div class="bar"><div id="ebar" class="fill enemyFill"></div></div>
+        <img id="photo" style="width:100%; border-radius:10px; display:none;">
+
+        <p id="memory"></p>
+
+        <div class="bar">
+            <div id="ebar" class="fill enemyFill"></div>
+        </div>
+
         <p id="ehp"></p>
 
-        <p id="enemyStats"></p>
+        <div class="d20" id="enemyDice">ENEMY d20 --</div>
     </div>
 
+    <!-- PLAYER -->
+    <div class="card">
+        <h2>YOU</h2>
+
+        <div class="bar">
+            <div id="pbar" class="fill"></div>
+        </div>
+
+        <p id="php"></p>
+
+        <div class="d20" id="playerDice">PLAYER d20 --</div>
+    </div>
+
+    <!-- COMBAT LOG -->
     <div class="card">
         <pre id="log"></pre>
         <pre id="effect"></pre>
     </div>
 
-    <button onclick="attack()">ATTACK</button>
-
-    <!-- CAT SYSTEM -->
-    <div class="card" id="catCard" style="display:none;">
-        <h3>🐱 COMPANION ENCOUNTER</h3>
-        <pre id="catArt" class="ascii"></pre>
-        <p id="catName"></p>
-        <button onclick="tameCat()">Try to Tame (Roll d20)</button>
-        <p id="catResult"></p>
-    </div>
+    <button onclick="attack()">ROLL ATTACK</button>
 
 </div>
 
@@ -141,135 +169,106 @@ pre {
 <script>
 
 /* =========================
-   STATE
+   GAME STATE (EXTENDABLE)
 ========================= */
 
 let game = {
-    player: { hp: 100, maxHp: 100, name: "", class: "", cat: null },
-    enemy: { hp: 0, maxHp: 0, name: "", stats: {} },
-    next: null,
-    cat: null
+    player: { hp: 100, maxHp: 100 },
+    enemy: { hp: 0, maxHp: 0 },
+    next: null
 };
 
 /* =========================
-   BOSSES
+   BOSSES (DATA ONLY)
 ========================= */
 
 const bosses = {
     miscommunication: {
         name: "Miscommunication",
         hp: 40,
-        ascii: `??? signals break ???`,
+        ascii: "??? signals break ???",
+        photo: "photos/level1.jpg",
+        memory: "We misunderstood each other."
     },
     doubt: {
         name: "Doubt",
         hp: 60,
-        ascii: `( ? ? )`,
+        ascii: "( ? ? )",
+        photo: "photos/level2.jpg",
+        memory: "Are we okay?"
     },
     distance: {
         name: "Distance",
         hp: 80,
-        ascii: `YOU .... PHILLIPS`,
+        ascii: "YOU ... ME",
+        photo: "photos/level3.jpg",
+        memory: "Still connected."
     },
     final: {
-        name: "Corrupted Phillips",
+        name: "Final Love Test",
         hp: 120,
-        ascii: `(╬ಠ益ಠ)`,
+        ascii: "(╬ಠ益ಠ)",
+        photo: "photos/final.jpg",
+        memory: "We chose each other."
     }
 };
-
-/* =========================
-   CATS
-========================= */
-
-const cats = [
-    { name: "Void Kitten", ascii: "(=චᆽච=)", buff: "damage" },
-    { name: "Sunbeam Cat", ascii: "ฅ^•ﻌ•^ฅ", buff: "heal" },
-    { name: "Gremlin Cat", ascii: "(=｀ω´=)", buff: "crit" }
-];
 
 /* =========================
    NAV
 ========================= */
 
 function show(id){
-    document.querySelectorAll(".screen")
-        .forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
-function start(){ show("char"); }
+function start(){
+    show("char");
+}
 
 /* =========================
-   DICE
+   DICE SYSTEM
 ========================= */
 
 function roll(){
     return Math.floor(Math.random()*20)+1;
 }
 
-function nat20(r){ return r === 20; }
+function renderDice(p, e){
+    document.getElementById("playerDice").innerText = `PLAYER d20 ${p}`;
+    document.getElementById("enemyDice").innerText = `ENEMY d20 ${e}`;
+}
 
 /* =========================
-   CHARACTER
+   CHARACTER SYSTEM
 ========================= */
 
 function create(){
-    game.player.name = document.getElementById("name").value;
-    game.player.class = document.getElementById("class").value;
 
-    let s = "";
-    for(let i=0;i<6;i++){
-        s += Math.floor(Math.random()*20)+1 + " ";
-    }
+    let stats = {
+        STR: roll(),
+        CHA: roll(),
+        LCK: roll(),
+        END: roll()
+    };
 
-    document.getElementById("stats").innerHTML =
-        `<div class="card">${s}</div>`;
+    document.getElementById("statsBox").innerText =
+`CLASS: ${document.getElementById("class").value}
+
+STR: ${stats.STR}
+CHA: ${stats.CHA}
+LCK: ${stats.LCK}
+END: ${stats.END}`;
 }
 
 /* =========================
-   CAT SYSTEM
-========================= */
-
-function spawnCat(){
-
-    let c = cats[Math.floor(Math.random()*cats.length)];
-
-    game.cat = { ...c, tamed: false };
-
-    document.getElementById("catCard").style.display = "block";
-    document.getElementById("catArt").innerText = c.ascii;
-    document.getElementById("catName").innerText = c.name;
-    document.getElementById("catResult").innerText = "";
-}
-
-function tameCat(){
-
-    let r = roll();
-
-    if(r > 10){
-        game.cat.tamed = true;
-        game.player.cat = game.cat;
-
-        document.getElementById("catResult").innerText =
-            `Rolled ${r} — The cat trusts you ❤️`;
-    } else {
-        document.getElementById("catResult").innerText =
-            `Rolled ${r} — The cat ran away...`;
-    }
-
-    document.getElementById("catCard").style.display = "none";
-}
-
-/* =========================
-   SPAWN
+   SPAWN SYSTEM
 ========================= */
 
 function spawn(key, next){
 
     let b = bosses[key];
 
-    game.enemy.name = b.name;
     game.enemy.hp = b.hp;
     game.enemy.maxHp = b.hp;
     game.next = next;
@@ -277,35 +276,34 @@ function spawn(key, next){
     document.getElementById("enemyName").innerText = b.name;
     document.getElementById("enemyArt").innerText = b.ascii;
 
+    document.getElementById("photo").src = b.photo;
+    document.getElementById("photo").style.display = "block";
+    document.getElementById("memory").innerText = b.memory;
+
     update();
     show("battle");
-
-    spawnCat(); // 👈 CAT ADDED HERE
 }
 
 /* =========================
-   COMBAT
+   COMBAT SYSTEM
 ========================= */
 
 function attack(){
 
-    let pr = roll();
-    let er = roll();
+    let p = roll();
+    let e = roll();
 
-    // CAT BUFFS
-    if(game.player.cat && game.player.cat.tamed){
-        if(game.player.cat.buff === "damage") pr += 2;
-        if(game.player.cat.buff === "crit" && pr > 18) pr = 20;
-    }
+    renderDice(p, e);
 
     document.getElementById("log").innerText =
-        `You rolled ${pr} vs Enemy ${er}`;
+        `You rolled ${p} vs Enemy ${e}`;
 
-    if(nat20(pr)){
+    if(p === 20){
         game.enemy.hp -= 30;
-        document.getElementById("effect").innerText = "CRITICAL HIT 💥";
+        document.getElementById("effect").innerText =
+            "💥 NAT 20 CRITICAL HIT 💥";
     }
-    else if(pr >= er){
+    else if(p >= e){
         game.enemy.hp -= 10;
     }
     else {
@@ -313,20 +311,20 @@ function attack(){
     }
 
     update();
-    endCheck();
+    checkEnd();
 }
 
 /* =========================
-   UI
+   UI UPDATE
 ========================= */
 
 function update(){
 
     document.getElementById("php").innerText =
-        game.player.hp + " / 100";
+        `${game.player.hp} / 100`;
 
     document.getElementById("ehp").innerText =
-        game.enemy.hp + " / " + game.enemy.maxHp;
+        `${game.enemy.hp} / ${game.enemy.maxHp}`;
 
     document.getElementById("pbar").style.width =
         game.player.hp + "%";
@@ -336,29 +334,28 @@ function update(){
 }
 
 /* =========================
-   END
+   PROGRESSION
 ========================= */
 
-function endCheck(){
+function checkEnd(){
 
     if(game.enemy.hp <= 0){
-        setTimeout(()=>game.next(), 700);
+        setTimeout(()=>game.next(), 600);
     }
 
     if(game.player.hp <= 0){
         document.body.innerHTML =
-        "<h1 style='color:white;text-align:center;padding:50px;'>💔 You Lost</h1>";
+        "<h1 style='padding:50px;'>💔 You Lost</h1>";
     }
 }
 
 /* =========================
-   LEVELS
+   LEVEL FLOW
 ========================= */
 
 function level1(){ spawn("miscommunication", level2); }
 function level2(){ spawn("doubt", level3); }
 function level3(){ spawn("distance", finalBoss); }
-
 function finalBoss(){ spawn("final", endGame); }
 
 function endGame(){ show("end"); }

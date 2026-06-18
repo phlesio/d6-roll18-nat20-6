@@ -2,31 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>d6 - roll18 - nat20 plus 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roll For Love ❤️</title>
 
-
-
-    
 <style>
-    <style>
-.ascii {
-    font-family: monospace;
-    white-space: pre;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0e0f14;
+    color: white;
+    text-align: center;
 }
+
+.screen { display: none; padding: 20px; }
+.active { display: block; }
 
 .card {
     background: #1b1d2a;
-    padding: 12px;
-    margin: 10px auto;
+    margin: 12px auto;
+    padding: 14px;
     border-radius: 12px;
+    width: 92%;
+    max-width: 520px;
+}
+
+button {
     width: 90%;
-    max-width: 500px;
+    max-width: 320px;
+    padding: 12px;
+    margin: 6px;
+    border: none;
+    border-radius: 10px;
+    background: #ff4d6d;
+    color: white;
+    font-size: 16px;
+}
+
+pre {
+    white-space: pre-wrap;
+    font-size: 14px;
 }
 
 .bar {
-    width: 100%;
-    height: 18px;
     background: #333;
+    height: 18px;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -37,70 +56,7 @@
     transition: 0.3s;
 }
 
-.enemyFill {
-    background: #6c63ff;
-}
-
-button {
-    padding: 12px;
-    width: 90%;
-    max-width: 300px;
-    margin: 6px;
-    border: none;
-    border-radius: 10px;
-    background: #ff4d6d;
-    color: white;
-    font-size: 16px;
-}
-</style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0f0f14;
-    color: white;
-    text-align: center;
-}
-
-.screen {
-    display: none;
-    padding: 40px;
-}
-
-.active {
-    display: block;
-}
-
-button {
-    background: #ff4d6d;
-    border: none;
-    padding: 12px 20px;
-    color: white;
-    margin: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-input, select {
-    padding: 10px;
-    margin: 10px;
-    font-size: 16px;
-}
-
-.card {
-    background: #1c1c26;
-    padding: 20px;
-    margin: 20px auto;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 500px;
-}
-
-img {
-    width: 100%;
-    border-radius: 10px;
-    margin-top: 10px;
-}
+.enemyFill { background: #6c63ff; }
 
 .ascii {
     font-family: monospace;
@@ -113,332 +69,259 @@ img {
 
 <!-- INTRO -->
 <div id="intro" class="screen active">
-    <h1>d6- roll18 - nat20 plus 5</h1>
-
+    <h1>🎲 Roll For Love</h1>
     <div class="card">
-        <p>A new quest has appeared:</p>
-        <h2>Find Your Forever Person</h2>
-        <p>Difficulty: Nigh Impossible</p>
-        <p>Reward: ???</p>
+        <p>A relationship RPG adventure</p>
     </div>
-
-    <p>Do you accept?</p>
-    <button onclick="startGame()">Accept Quest</button>
+    <button onclick="start()">Accept Quest</button>
 </div>
 
-<!-- CHARACTER CREATION -->
-<div id="create" class="screen">
-    <h2>Character Creation</h2>
-
-    <input id="name" placeholder="Enter your name">
-
+<!-- CHARACTER -->
+<div id="char" class="screen">
+    <h2>Create Character</h2>
+    <input id="name" placeholder="Your name">
     <br>
-
     <select id="class">
-        <option>Nooms Ranger</option>
-        <option>Bubbas Bard</option>
-        <option>Wizard of Noomies</option>
-        <option>Honey Warlock</option>
-        <option>Darling Druid</option>
+        <option>Bard</option>
+        <option>Fighter</option>
+        <option>Rogue</option>
+        <option>Wizard</option>
     </select>
 
-    <br>
-
-    <button onclick="rollStats()">Roll Stats</button>
+    <button onclick="create()">Roll Stats</button>
 
     <div id="stats"></div>
 
-    <button id="continue1" style="display:none" onclick="level1()">Begin Adventure</button>
+    <button onclick="level1()">Begin Journey</button>
 </div>
 
-<!-- LEVEL 1 -->
-
-  
-<div id="level1" class="screen">
-    <h2>Level 1: Communication</h2>
+<!-- BATTLE -->
+<div id="battle" class="screen">
 
     <div class="card">
-        <p>A stray cat appears...</p>
-        <pre class="ascii">
- /\_/\
-( o.o )
- > ^ <
-        </pre>
-
-        <p>Attempt to tame it?</p>
-
-        <button onclick="catRoll()">Tame Cat</button>
-
-        <div id="catResult"></div>
+        <h3>PLAYER</h3>
+        <div class="bar"><div id="pbar" class="fill"></div></div>
+        <p id="php"></p>
     </div>
 
-    <button onclick="battle('Miscommunication', 2, level2)">Fight Miscommunication</button>
+    <div class="card">
+        <h3 id="enemyName"></h3>
+        <pre id="enemyArt" class="ascii"></pre>
 
-    <div id="mem1"></div>
-</div>
+        <div class="bar"><div id="ebar" class="fill enemyFill"></div></div>
+        <p id="ehp"></p>
 
-<!-- LEVEL 2 -->
-<div id="level2" class="screen">
-    <h2>Level 2: Doubt</h2>
-
-    <button onclick="battle('Doubt', 3, level3)">Fight Doubt</button>
-
-    <div id="mem2"></div>
-</div>
-
-<!-- LEVEL 3 -->
-<div id="level3" class="screen">
-    <h2>Level 3: Distance</h2>
-
-    <button onclick="battle('Distance', 4, level4)">Fight Distance</button>
-
-    <div id="mem3"></div>
-</div>
-
-<!-- FINAL BOSS -->
-<div id="level4" class="screen">
-    <h2>Final Boss: Corrupted Phillips</h2>
+        <p id="enemyStats"></p>
+    </div>
 
     <div class="card">
-        <p>A distorted version of someone familiar appears...</p>
+        <pre id="log"></pre>
+        <pre id="effect"></pre>
+    </div>
 
-        <pre class="ascii">
-   (corrupted)
-    PHILLIPS
-        </pre>
+    <button onclick="attack()">ATTACK</button>
 
-        <button onclick="finalBattle()">Fight</button>
+    <div class="card">
+        <img id="photo" style="width:100%; border-radius:10px; display:none;">
+        <p id="memory"></p>
     </div>
 </div>
 
 <!-- END -->
 <div id="end" class="screen">
-    <h1>❤️ Quest Complete</h1>
-
-    <div id="endingText"></div>
-
-    <h3>Party</h3>
-    <p id="party"></p>
+    <h1>❤️ THE END</h1>
+    <p>Happy Anniversary</p>
 </div>
+
+<script>
+
+/* =========================
+   STATE
+========================= */
+
 let game = {
-    player: {
-        name: "",
-        class: "",
-        hp: 100,
-        maxHp: 100,
-        cat: null
-    },
-    enemy: {
-        name: "",
-        hp: 0,
-        maxHp: 0,
-        stats: {}
-    },
+    player: { hp: 100, maxHp: 100, name: "", class: "", cat: null },
+    enemy: { hp: 0, maxHp: 0, name: "", stats: {} },
     next: null
 };
 
-    function roll() {
-    return Math.floor(Math.random() * 20) + 1;
-}
+/* =========================
+   BOSSES
+========================= */
 
-function isNat20(r) {
-    return r === 20;
-}
-<script>
-let game = {
-    player: {
-        name: "",
-        class: "",
-        hp: 100,
-        maxHp: 100,
-        stats: {},
-        cat: null
-    },
-
-    enemy: {
-        name: "",
-        hp: 0,
-        maxHp: 0,
-        stats: {}
-    },
-
-    inBattle: false
-};
-let player = {
-    name: "",
-    class: "",
-    stats: {},
-    cat: null
-};
-
-    const bosses = {
+const bosses = {
     miscommunication: {
         name: "Miscommunication",
         hp: 40,
-        ascii: `
-   ???  ???  ???
-   broken signals
-        `,
+        ascii: `??? signals break ???`,
         photo: "photos/level1.jpg",
-        memory: "We struggled to understand each other."
+        memory: "We didn’t always understand each other."
     },
-
     doubt: {
         name: "Doubt",
         hp: 60,
-        ascii: `
-   .-""""-.
-  (  ?  ?  )
-    DOUBT
-        `,
+        ascii: `( ? ? )`,
         photo: "photos/level2.jpg",
         memory: "We questioned everything—but stayed."
     },
-
     distance: {
         name: "Distance",
         hp: 80,
-        ascii: `
-YOU        ...        PHILLIPS
-   miles between
-        `,
+        ascii: `YOU .... PHILLIPS`,
         photo: "photos/level3.jpg",
-        memory: "Miles couldn’t break us."
+        memory: "Miles couldn’t stop us."
     },
-
     final: {
         name: "Corrupted Phillips",
         hp: 120,
-        ascii: `
-  (╬ಠ益ಠ)
-  CORRUPTED PHILLIPS
-        `,
+        ascii: `(╬ಠ益ಠ)`,
         photo: "photos/final.jpg",
-        memory: "Even broken, I was still yours."
+        memory: "Even broken, I still chose you."
     }
 };
 
-function startGame() {
-    switchScreen('create');
+/* =========================
+   NAV
+========================= */
+
+function show(id){
+    document.querySelectorAll(".screen")
+        .forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 }
 
-function switchScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+function start(){ show("char"); }
+
+/* =========================
+   DICE
+========================= */
+
+function roll(){
+    return Math.floor(Math.random()*20)+1;
 }
 
-/* CHARACTER CREATION */
-function rollStats() {
-    player.name = document.getElementById("name").value;
-    player.class = document.getElementById("class").value;
-
-    let stats = ["STR","INT","WIS","DEX","CHA","LUC"];
-    let out = "<div class='card'>";
-
-    player.stats = {};
-
-    stats.forEach(s => {
-        let roll = Math.floor(Math.random()*20)+1;
-        player.stats[s] = roll;
-        out += `<p>${s}: ${roll}</p>`;
-    });
-
-    out += "</div>";
-
-    document.getElementById("stats").innerHTML = out;
-    document.getElementById("continue1").style.display = "inline-block";
+function nat20(r){
+    return r === 20;
 }
 
-/* CAT SYSTEM */
-let catAttempts = 0;
+/* =========================
+   CHARACTER
+========================= */
 
-function catRoll() {
-    catAttempts++;
+function create(){
+    game.player.name = document.getElementById("name").value;
+    game.player.class = document.getElementById("class").value;
 
-    let threshold = catAttempts === 1 ? 11 : catAttempts === 2 ? 8 : 1;
-    let roll = Math.floor(Math.random()*20)+1;
+    let s = "";
+    for(let i=0;i<6;i++){
+        s += Math.floor(Math.random()*20)+1 + " ";
+    }
 
-    let result = document.getElementById("catResult");
+    document.getElementById("stats").innerHTML =
+        `<div class="card">${s}</div>`;
+}
 
-    if (roll >= threshold) {
-        let name = prompt("You befriended the cat! Name it:");
+/* =========================
+   SPAWN
+========================= */
 
-        player.cat = name || "Mochi";
+function spawn(key, next){
 
-        result.innerHTML = `<p>Cat joined your journey!</p>
-        <p>Name: ${player.cat}</p>`;
+    let b = bosses[key];
 
-    } else {
-        result.innerHTML = `<p>The cat runs away... (rolled ${roll})</p>`;
+    game.enemy.name = b.name;
+    game.enemy.hp = b.hp;
+    game.enemy.maxHp = b.hp;
+    game.next = next;
+
+    document.getElementById("enemyName").innerText = b.name;
+    document.getElementById("enemyArt").innerText = b.ascii;
+
+    document.getElementById("photo").src = b.photo;
+    document.getElementById("photo").style.display = "block";
+    document.getElementById("memory").innerText = b.memory;
+
+    update();
+    show("battle");
+}
+
+/* =========================
+   COMBAT
+========================= */
+
+function attack(){
+
+    let pr = roll();
+    let er = roll();
+
+    document.getElementById("log").innerText =
+        `You ${pr} vs Enemy ${er}`;
+
+    if(nat20(pr)){
+        game.enemy.hp -= 30;
+        document.getElementById("effect").innerText =
+            "💥 NAT 20!";
+    }
+    else if(pr >= er){
+        game.enemy.hp -= 10;
+    }
+    else {
+        game.player.hp -= 10;
+    }
+
+    update();
+    endCheck();
+}
+
+/* =========================
+   UI
+========================= */
+
+function update(){
+
+    document.getElementById("php").innerText =
+        game.player.hp + " / 100";
+
+    document.getElementById("ehp").innerText =
+        game.enemy.hp + " / " + game.enemy.maxHp;
+
+    document.getElementById("pbar").style.width =
+        game.player.hp + "%";
+
+    document.getElementById("ebar").style.width =
+        (game.enemy.hp / game.enemy.maxHp * 100) + "%";
+}
+
+/* =========================
+   ENDING
+========================= */
+
+function endCheck(){
+
+    if(game.enemy.hp <= 0){
+        setTimeout(()=>game.next(), 700);
+    }
+
+    if(game.player.hp <= 0){
+        document.body.innerHTML =
+        "<h1 style='color:white;text-align:center;padding:50px;'>💔 You Lost</h1>";
     }
 }
 
-/* BATTLE SYSTEM */
-function battle(enemy, winsNeeded, nextLevel) {
-    let wins = 0;
+/* =========================
+   LEVELS
+========================= */
 
-    for (let i = 0; i < winsNeeded; i++) {
-        let playerRoll = Math.floor(Math.random()*20)+1;
-        let enemyRoll = Math.floor(Math.random()*20)+1;
+function level1(){ spawn("miscommunication", level2); }
+function level2(){ spawn("doubt", level3); }
+function level3(){ spawn("distance", finalBoss); }
 
-        if (playerRoll >= enemyRoll) wins++;
-    }
-
-    if (wins >= winsNeeded-1) {
-        alert(enemy + " defeated!");
-
-        if (nextLevel) nextLevel();
-    } else {
-        alert("The battle continues...");
-    }
+function finalBoss(){
+    spawn("final", endGame);
 }
 
-/* LEVELS */
-function level1() {
-    switchScreen('level1');
-}
-
-function level2() {
-    unlockMemory("mem1", "Communication", "First connection established.");
-    switchScreen('level2');
-}
-
-function level3() {
-    unlockMemory("mem2", "Doubt", "We chose each other anyway.");
-    switchScreen('level3');
-}
-
-function level4() {
-    unlockMemory("mem3", "Distance", "Love survived the miles.");
-    switchScreen('level4');
-}
-
-/* FINAL BATTLE */
-function finalBattle() {
-    switchScreen('end');
-
-    document.getElementById("endingText").innerHTML =
-    `
-    <p>Even corrupted, you were still you.</p>
-    <p>And I still chose you.</p>
-    <p>Every roll was a natural 20.</p>
-    <p>❤️ Happy Anniversary ❤️</p>
-    `;
-
-    document.getElementById("party").innerHTML =
-    `
-    ${player.name} (${player.class})<br>
-    ${player.cat ? player.cat + " (Cat Familiar)" : "No Familiar"}
-    `;
-}
-
-/* MEMORY SYSTEM */
-function unlockMemory(id, title, text) {
-    document.getElementById(id).innerHTML =
-    `<div class='card'>
-        <h3>Memory Unlocked: ${title}</h3>
-        <p>${text}</p>
-    </div>`;
+function endGame(){
+    show("end");
 }
 
 </script>
